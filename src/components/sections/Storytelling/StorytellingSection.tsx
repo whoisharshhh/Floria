@@ -194,11 +194,8 @@ export default function StorytellingSection({ onLoadProgress }: StorytellingSect
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const galleryScrollRef = useRef<HTMLDivElement>(null);
 
-  // Kinetic running typography and chapter badge references
+  // Kinetic running typography reference
   const tickerTextRef = useRef<HTMLDivElement>(null);
-  const chapterBadgeRef = useRef<HTMLDivElement>(null);
-  const chapterTitleRef = useRef<HTMLSpanElement>(null);
-  const chapterDescRef = useRef<HTMLSpanElement>(null);
 
   const openLightbox = useCallback((idx: number) => {
     setLightboxIndex(idx);
@@ -751,29 +748,6 @@ export default function StorytellingSection({ onLoadProgress }: StorytellingSect
         tickerTextRef.current.style.transform = `translate3d(${scrollShift}px, 0px, 0px)`;
       }
 
-      if (chapterBadgeRef.current) {
-        const badgeOpacity =
-          p < 0.12 ? 0 : p < 0.18 ? (p - 0.12) / 0.06 : p > 0.95 ? Math.max(0, (1 - p) / 0.05) : 1;
-        chapterBadgeRef.current.style.opacity = `${badgeOpacity}`;
-
-        let currentChapter = "01 // THE WOOLEN VALLEY";
-        let currentSub = "Cottage flight over embroidered hills";
-        if (p > 0.65) {
-          currentChapter = "03 // THE LIVING SANCTUARY";
-          currentSub = "Where curious creatures dream";
-        } else if (p > 0.38) {
-          currentChapter = "02 // BLOSSOM RIVER CROSSING";
-          currentSub = "Drifting through lavender mist";
-        }
-
-        if (chapterTitleRef.current && chapterTitleRef.current.textContent !== currentChapter) {
-          chapterTitleRef.current.textContent = currentChapter;
-        }
-        if (chapterDescRef.current && chapterDescRef.current.textContent !== currentSub) {
-          chapterDescRef.current.textContent = currentSub;
-        }
-      }
-
       animId = requestAnimationFrame(renderLoop);
     };
 
@@ -924,30 +898,6 @@ export default function StorytellingSection({ onLoadProgress }: StorytellingSect
           </div>
         </div>
 
-        {/* Dynamic Chapter Milestone Badge in Top-Left */}
-        <div
-          ref={chapterBadgeRef}
-          className="absolute top-5 sm:top-8 left-5 sm:left-10 z-30 pointer-events-none transition-opacity duration-300 flex items-center gap-3 px-3.5 sm:px-4 py-2 rounded-full border border-white/15 bg-black/60 backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.7)]"
-        >
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-400" />
-          </span>
-          <div className="flex flex-col">
-            <span
-              ref={chapterTitleRef}
-              className="font-mono text-[9px] sm:text-[10px] tracking-[0.24em] uppercase text-rose-300 font-bold"
-            >
-              01 // THE WOOLEN VALLEY
-            </span>
-            <span
-              ref={chapterDescRef}
-              className="font-sans text-[10px] sm:text-[11px] text-zinc-300 font-medium tracking-wide"
-            >
-              Cottage flight over embroidered hills
-            </span>
-          </div>
-        </div>
       </div>
 
       {/* ============================================================ */}
