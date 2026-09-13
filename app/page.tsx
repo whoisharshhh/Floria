@@ -4,9 +4,10 @@ import React, { useState, useRef, useEffect } from "react";
 import StorytellingSection from "@/components/StorytellingSection";
 import FloriaDiscoverySection from "@/components/FloriaDiscoverySection";
 import FloriaFooter from "@/components/FloriaFooter";
+import LuxuryPreloader from "@/components/LuxuryPreloader";
 
 export default function Home() {
-
+  const [preloadProgress, setPreloadProgress] = useState(0);
 
   // Hover & Touch Reveal State
   const [isHovered, setIsHovered] = useState(false);
@@ -132,6 +133,9 @@ export default function Home() {
       suppressHydrationWarning
       className="relative w-full min-h-screen bg-black text-white selection:bg-white selection:text-black"
     >
+      {/* LUXURY EDITORIAL PRELOADER (Locks scroll until video frames buffer) */}
+      <LuxuryPreloader progress={preloadProgress} />
+
       {/* 1. HERO SECTION (100vh on desktop, 100dvh on mobile) */}
       <section
         ref={heroRef}
@@ -224,13 +228,14 @@ export default function Home() {
       </section>
 
       {/* 2. SCROLL-DRIVEN STORYTELLING SECTION DIRECTLY AFTER HERO */}
-      <StorytellingSection />
+      <StorytellingSection onLoadProgress={setPreloadProgress} />
 
       {/* 3. FLORIA DISCOVERY SECTION — INTERACTIVE DIGITAL ARCHIVE */}
       <FloriaDiscoverySection />
 
       {/* 4. FLORIA FOOTER — ART BOOK COLOPHON */}
       <FloriaFooter />
+
 
     </div>
   );

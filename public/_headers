@@ -1,0 +1,11 @@
+/frames-part1/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/ezgif-7b873439e6df41fa-jpg/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/discovery/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/border.png
+  Cache-Control: public, max-age=31536000, immutable

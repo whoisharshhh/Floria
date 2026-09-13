@@ -156,7 +156,11 @@ const BLOOM_ITEMS = [
     rot: -3.5, dx: 95, dy: 90, speed: 1.05, phase: 4.1 },
 ];
 
-export default function StorytellingSection() {
+interface StorytellingSectionProps {
+  onLoadProgress?: (progress: number) => void;
+}
+
+export default function StorytellingSection({ onLoadProgress }: StorytellingSectionProps = {}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const borderImgRef = useRef<HTMLImageElement>(null);
@@ -270,10 +274,33 @@ export default function StorytellingSection() {
   // Part 2: Video 2 (235114.mp4 - 232 frames)
   useEffect(() => {
     const p1: HTMLImageElement[] = [];
+    const targetBuffer = 45; // Essential 45 initial frames guarantee 100% instant silky mobile start
+    let loadedCount = 0;
+
+    const reportProgress = () => {
+      loadedCount++;
+      const percent = Math.min(100, Math.round((loadedCount / targetBuffer) * 100));
+      if (onLoadProgress) onLoadProgress(percent);
+    };
+
+    // Safety timeout to ensure user never gets stuck if on poor 2G connection
+    const fallbackTimer = setTimeout(() => {
+      if (onLoadProgress) onLoadProgress(100);
+    }, 5000);
+
     for (let i = 1; i <= TOTAL_PART1; i++) {
       const img = new Image();
       const num = String(i).padStart(3, "0");
+      img.onload = () => {
+        if (i <= targetBuffer) reportProgress();
+      };
+      img.onerror = () => {
+        if (i <= targetBuffer) reportProgress();
+      };
       img.src = `/frames-part1/frame-${num}.jpg`;
+      if (img.complete && i <= targetBuffer) {
+        reportProgress();
+      }
       p1.push(img);
     }
     part1Ref.current = p1;
@@ -286,6 +313,7 @@ export default function StorytellingSection() {
       p2.push(img);
     }
     part2Ref.current = p2;
+
 
     // Eagerly pre-decode initial and boundary transition frames in the background for zero-stutter GPU draws
     const prewarmSeam = async () => {
