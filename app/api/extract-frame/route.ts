@@ -15,7 +15,8 @@ export async function POST(req: NextRequest) {
     const filePath = path.join(dir, `frame-${frameNum}.jpg`);
     fs.writeFileSync(filePath, buffer);
     return NextResponse.json({ success: true, frameNum });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Unknown error";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

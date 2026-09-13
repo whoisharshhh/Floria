@@ -194,6 +194,12 @@ export default function StorytellingSection({ onLoadProgress }: StorytellingSect
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const galleryScrollRef = useRef<HTMLDivElement>(null);
 
+  // Kinetic running typography and chapter badge references
+  const tickerTextRef = useRef<HTMLDivElement>(null);
+  const chapterBadgeRef = useRef<HTMLDivElement>(null);
+  const chapterTitleRef = useRef<HTMLSpanElement>(null);
+  const chapterDescRef = useRef<HTMLSpanElement>(null);
+
   const openLightbox = useCallback((idx: number) => {
     setLightboxIndex(idx);
     setLightboxOpen(true);
@@ -320,17 +326,17 @@ export default function StorytellingSection({ onLoadProgress }: StorytellingSect
       // Eagerly decode first 25 frames immediately so user's first scroll touch is instant
       for (let i = 0; i < Math.min(25, TOTAL_PART1); i++) {
         if (p1[i] && typeof p1[i].decode === "function") {
-          try { await p1[i].decode(); } catch (_) {}
+          try { await p1[i].decode(); } catch {}
         }
       }
       for (let i = Math.max(0, TRANSITION_START - 10); i < TOTAL_PART1; i++) {
         if (p1[i] && typeof p1[i].decode === "function") {
-          try { await p1[i].decode(); } catch (_) {}
+          try { await p1[i].decode(); } catch {}
         }
       }
       for (let i = 0; i < Math.min(TOTAL_PART2, BLEND_SPAN + 10); i++) {
         if (p2[i] && typeof p2[i].decode === "function") {
-          try { await p2[i].decode(); } catch (_) {}
+          try { await p2[i].decode(); } catch {}
         }
       }
     };
@@ -342,7 +348,6 @@ export default function StorytellingSection({ onLoadProgress }: StorytellingSect
     let animId: number;
     let vw = window.innerWidth;
     let vh = window.innerHeight;
-    let lastTimestamp = 0;
 
     let cachedViewportHeight = typeof window !== "undefined" ? window.innerHeight : 800;
 
@@ -732,6 +737,43 @@ export default function StorytellingSection({ onLoadProgress }: StorytellingSect
       // Sub-millisecond GPU draw with seamless bridge
       renderFrame(displayFrameFloat);
 
+      // -------------------------------------------------------------
+      // KINETIC RUNNING TYPOGRAPHY & CHAPTER BADGE (Scroll-Driven)
+      // -------------------------------------------------------------
+      if (tickerTextRef.current) {
+        // Fade in gracefully once card expansion begins (p > 0.08)
+        const textOpacity =
+          p < 0.08 ? 0 : p < 0.16 ? (p - 0.08) / 0.08 : p > 0.95 ? Math.max(0, (1 - p) / 0.05) : 1;
+        tickerTextRef.current.style.opacity = `${textOpacity}`;
+
+        // Horizontal velocity translation: continuously glides with scroll + perpetual drift
+        const scrollShift = -(p * 2600 + now * 35);
+        tickerTextRef.current.style.transform = `translate3d(${scrollShift}px, 0px, 0px)`;
+      }
+
+      if (chapterBadgeRef.current) {
+        const badgeOpacity =
+          p < 0.12 ? 0 : p < 0.18 ? (p - 0.12) / 0.06 : p > 0.95 ? Math.max(0, (1 - p) / 0.05) : 1;
+        chapterBadgeRef.current.style.opacity = `${badgeOpacity}`;
+
+        let currentChapter = "01 // THE WOOLEN VALLEY";
+        let currentSub = "Cottage flight over embroidered hills";
+        if (p > 0.65) {
+          currentChapter = "03 // THE LIVING SANCTUARY";
+          currentSub = "Where curious creatures dream";
+        } else if (p > 0.38) {
+          currentChapter = "02 // BLOSSOM RIVER CROSSING";
+          currentSub = "Drifting through lavender mist";
+        }
+
+        if (chapterTitleRef.current && chapterTitleRef.current.textContent !== currentChapter) {
+          chapterTitleRef.current.textContent = currentChapter;
+        }
+        if (chapterDescRef.current && chapterDescRef.current.textContent !== currentSub) {
+          chapterDescRef.current.textContent = currentSub;
+        }
+      }
+
       animId = requestAnimationFrame(renderLoop);
     };
 
@@ -836,6 +878,75 @@ export default function StorytellingSection({ onLoadProgress }: StorytellingSect
             ref={vignetteRef}
             className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/40 via-transparent to-black/30 transition-opacity"
           />
+        </div>
+
+        {/* ============================================================ */}
+        {/* KINETIC FLOATING RUNNING TYPOGRAPHY (Scroll-Driven Ticker)  */}
+        {/* ============================================================ */}
+        <div className="absolute bottom-12 sm:bottom-16 inset-x-0 z-20 pointer-events-none overflow-hidden select-none whitespace-nowrap">
+          <div
+            ref={tickerTextRef}
+            className="inline-flex items-center gap-10 sm:gap-14 font-sans font-black tracking-[0.2em] sm:tracking-[0.25em] text-white/90 uppercase transition-opacity duration-300 will-change-transform"
+            style={{
+              textShadow: "0 4px 30px rgba(0,0,0,0.95), 0 0 25px rgba(244,114,182,0.4)",
+            }}
+          >
+            {[
+              "✦ A WORLD WOVEN WITH WONDER",
+              "CHAPTER I: THE MEADOW FLIGHT",
+              "WHERE WILDFLOWERS BREATHE",
+              "ENTER THE LIVING SANCTUARY",
+              "CRAFTED WITH QUIET POETRY",
+              "✦ A WORLD WOVEN WITH WONDER",
+              "CHAPTER I: THE MEADOW FLIGHT",
+              "WHERE WILDFLOWERS BREATHE",
+              "ENTER THE LIVING SANCTUARY",
+              "CRAFTED WITH QUIET POETRY",
+              "✦ A WORLD WOVEN WITH WONDER",
+              "CHAPTER I: THE MEADOW FLIGHT",
+              "WHERE WILDFLOWERS BREATHE",
+              "ENTER THE LIVING SANCTUARY",
+              "CRAFTED WITH QUIET POETRY",
+              "✦ A WORLD WOVEN WITH WONDER",
+              "CHAPTER I: THE MEADOW FLIGHT",
+              "WHERE WILDFLOWERS BREATHE",
+              "ENTER THE LIVING SANCTUARY",
+              "CRAFTED WITH QUIET POETRY",
+            ].map((phrase, i) => (
+              <span
+                key={i}
+                className="text-[clamp(1.3rem,4vw,2.8rem)] shrink-0 inline-flex items-center gap-4 bg-gradient-to-r from-white via-rose-200 to-amber-200 bg-clip-text text-transparent"
+              >
+                <span>{phrase}</span>
+                <span className="text-amber-300/70 text-base sm:text-xl">✧</span>
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Dynamic Chapter Milestone Badge in Top-Left */}
+        <div
+          ref={chapterBadgeRef}
+          className="absolute top-5 sm:top-8 left-5 sm:left-10 z-30 pointer-events-none transition-opacity duration-300 flex items-center gap-3 px-3.5 sm:px-4 py-2 rounded-full border border-white/15 bg-black/60 backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.7)]"
+        >
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-400" />
+          </span>
+          <div className="flex flex-col">
+            <span
+              ref={chapterTitleRef}
+              className="font-mono text-[9px] sm:text-[10px] tracking-[0.24em] uppercase text-rose-300 font-bold"
+            >
+              01 // THE WOOLEN VALLEY
+            </span>
+            <span
+              ref={chapterDescRef}
+              className="font-sans text-[10px] sm:text-[11px] text-zinc-300 font-medium tracking-wide"
+            >
+              Cottage flight over embroidered hills
+            </span>
+          </div>
         </div>
       </div>
 

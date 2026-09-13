@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Inter, Syne } from "next/font/google";
+import { siteConfig } from "@/config/site";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -31,10 +32,10 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "FLORIA — An Immersive World of Curious Creatures",
-  description: "An immersive world of curious creatures, magical places, and stories waiting to be discovered.",
-  authors: [{ name: "Harsh Patel" }],
-  creator: "Harsh Patel",
+  title: siteConfig.metadata.title,
+  description: siteConfig.metadata.description,
+  authors: [{ name: siteConfig.creator }],
+  creator: siteConfig.creator,
 };
 
 export default function RootLayout({
@@ -57,5 +58,3 @@ export default function RootLayout({
     </html>
   );
 }
-
-

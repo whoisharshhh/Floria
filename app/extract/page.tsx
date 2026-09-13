@@ -73,9 +73,10 @@ export default function ExtractPage() {
 
       setStatus("PART 1 COMPLETE! All 232 frames saved to frames-part1.");
       setIsDone(true);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setStatus("Error: " + err.message);
+      const message = err instanceof Error ? err.message : "Unknown error";
+      setStatus("Error: " + message);
     } finally {
       setExtracting(false);
     }
