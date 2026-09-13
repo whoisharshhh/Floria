@@ -13,55 +13,73 @@ export default function FloriaFooter() {
     setMousePos({ x, y });
   };
 
-  return (
-    <footer className="relative w-full bg-black text-white pt-16 sm:pt-28 md:pt-40 pb-12 sm:pb-16 px-6 sm:px-10 md:px-16 lg:px-24 overflow-hidden select-none border-t border-zinc-900/80 font-sans">
-      {/* Background Archival Grid Ambient lines */}
-      <div className="absolute inset-0 pointer-events-none opacity-[0.02] bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:32px_32px]" />
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
-      <div className="relative z-10 max-w-7xl mx-auto flex flex-col justify-between">
+  return (
+    <footer className="relative w-full bg-[#070709] text-white pt-20 sm:pt-28 md:pt-36 pb-14 sm:pb-18 px-6 sm:px-10 md:px-16 lg:px-24 overflow-hidden select-none border-t border-white/[0.08] font-sans">
+      {/* 1. Ambient Warm Aurora Clouds */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] sm:w-[850px] h-[350px] sm:h-[450px] bg-rose-500/[0.07] rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-1/3 left-1/4 w-[380px] h-[300px] bg-amber-400/[0.05] rounded-full blur-[110px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[320px] bg-purple-500/[0.05] rounded-full blur-[120px] pointer-events-none" />
+
+      {/* 2. Delicate Woolen Stitched Border at Top */}
+      <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-rose-300/30 to-transparent pointer-events-none" />
+
+      <div className="relative z-10 max-w-6xl mx-auto flex flex-col justify-between">
         {/* ============================================================ */}
-        {/* 1. TOP BRAND MANIFESTO & STORY STATEMENT                     */}
+        {/* 1. ELEGANT STORYBOOK MANIFESTO                                */}
         {/* ============================================================ */}
-        <div className="max-w-4xl mx-auto text-center flex flex-col items-center pb-16 sm:pb-24 border-b border-zinc-900 space-y-4 sm:space-y-6">
-          {/* Section Kicker */}
-          <div className="flex items-center gap-2.5 font-mono text-[9px] sm:text-[10px] tracking-[0.25em] sm:tracking-[0.3em] text-pink-400 uppercase font-semibold">
-            <span className="w-1.5 h-1.5 rounded-full bg-pink-400 animate-pulse shadow-[0_0_8px_rgba(244,114,182,0.8)]" />
-            A WORLD WOVEN FROM DREAMS // CHAPTER I
+        <div className="max-w-3xl mx-auto text-center flex flex-col items-center pb-16 sm:pb-20 border-b border-white/[0.07] space-y-5 sm:space-y-6">
+          {/* Whimsical Kicker Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-rose-300/20 bg-rose-500/[0.08] backdrop-blur-md shadow-[0_0_20px_rgba(244,114,182,0.15)]">
+            <span className="text-amber-300 text-xs animate-pulse">✦</span>
+            <span className="font-mono text-[10px] sm:text-[11px] tracking-[0.25em] text-rose-200 uppercase font-medium">
+              SANCTUARY OF WONDER
+            </span>
+            <span className="text-rose-300 text-xs animate-pulse">✦</span>
           </div>
 
-          <p className="font-display font-medium text-xl sm:text-3xl md:text-4xl text-white leading-snug tracking-tight max-w-3xl">
-            Step into a living sanctuary where curious creatures roam, gentle blossoms hum, and every path leads to a magical story.
+          {/* Emotional Manifesto Heading */}
+          <h2 className="font-sans font-bold text-2xl sm:text-3xl md:text-4xl text-white leading-tight tracking-tight max-w-2xl drop-shadow-[0_2px_15px_rgba(0,0,0,0.8)]">
+            Where curious creatures roam and every flower weaves a story.
+          </h2>
+
+          {/* Warm Poetic Body */}
+          <p className="text-sm sm:text-base text-zinc-300/90 leading-relaxed max-w-xl font-light tracking-wide">
+            Handcrafted with tactile textures, embroidered valleys, and quiet poetry. 
+            Floria is an invitation to slow down, wander through gentle petals, and rediscover the joy of imagination.
           </p>
 
-          <p className="text-sm sm:text-base text-zinc-300 leading-relaxed max-w-xl font-light">
-            Crafted with tactile textures, embroidered valleys, and quiet wonder. Floria is an invitation to slow down, wander beyond the horizon, and rediscover the joy of imagination.
-          </p>
-
-          {/* Whimsical Archival Stamps */}
-          <div className="pt-2 flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 font-mono text-[9px] sm:text-[10px] tracking-[0.16em] sm:tracking-[0.2em] text-zinc-400 uppercase">
+          {/* Luxury Creator & Storybook Badges */}
+          <div className="pt-3 flex flex-wrap items-center justify-center gap-3 sm:gap-4 font-mono text-[10px] sm:text-[11px] tracking-[0.16em] uppercase">
             <a
               href="https://www.linkedin.com/in/harsh-patel-mca"
               target="_blank"
               rel="noopener noreferrer"
-              className="border border-pink-500/40 bg-pink-500/10 text-pink-300 hover:text-white hover:border-pink-400 px-3 py-1.5 rounded-sm font-medium shadow-[0_0_15px_rgba(244,114,182,0.15)] transition-colors flex items-center gap-1.5"
+              className="group relative inline-flex items-center gap-2 px-4 py-2 rounded-full border border-rose-400/30 bg-gradient-to-r from-rose-500/10 to-amber-500/10 hover:border-rose-300 text-rose-200 hover:text-white transition-all duration-300 shadow-[0_4px_20px_rgba(244,114,182,0.15)] hover:shadow-[0_6px_25px_rgba(244,114,182,0.3)] hover:-translate-y-0.5"
             >
-              <span>✦ CREATED BY HARSH PATEL</span>
-              <span className="text-[9px]">↗</span>
+              <span className="text-amber-300 group-hover:scale-125 transition-transform duration-300">✦</span>
+              <span className="font-semibold tracking-wider">CRAFTED BY HARSH PATEL</span>
+              <span className="text-rose-400 group-hover:text-white transition-colors">↗</span>
             </a>
-            <span className="border border-white/15 bg-white/5 px-3 py-1.5 rounded-sm">
-              ✦ LIVING STORYBOOK
+
+            <span className="px-3.5 py-1.5 rounded-full border border-white/10 bg-white/[0.04] text-zinc-300/80 backdrop-blur-sm">
+              WOOLEN LIVING WORLD
             </span>
-            <span className="border border-white/15 bg-white/5 text-zinc-300 px-3 py-1.5 rounded-sm">
-              EST. 2026
+
+            <span className="px-3.5 py-1.5 rounded-full border border-white/10 bg-white/[0.04] text-zinc-400 backdrop-blur-sm">
+              EDITION 2026
             </span>
           </div>
         </div>
 
         {/* ============================================================ */}
-        {/* 2. OVERSIZED FLORIA TYPOGRAPHY (INTERACTIVE LIVING PLATE)    */}
+        {/* 2. TIMELESS, ULTRA-LUXURIOUS FLORIA TYPOGRAPHY               */}
         {/* ============================================================ */}
         <div
-          className="relative py-10 sm:py-20 border-b border-zinc-900 flex flex-col items-center justify-center w-full overflow-visible group cursor-pointer"
+          className="relative py-14 sm:py-20 border-b border-white/[0.07] flex flex-col items-center justify-center w-full overflow-visible group cursor-pointer"
           onMouseMove={handleMouseMove}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => {
@@ -69,90 +87,94 @@ export default function FloriaFooter() {
             setMousePos({ x: 0.5, y: 0.5 });
           }}
         >
-          {/* Micro Archival Kicker above the Word */}
-          <div className="flex items-center gap-2 font-mono text-[9px] sm:text-[11px] tracking-[0.3em] text-pink-400/90 uppercase mb-3 sm:mb-5 transition-opacity duration-300">
-            <span className="text-pink-400">✦</span>
-            <span>BOTANICAL ARCHIVE // LIVING MONOGRAPH</span>
-            <span className="text-pink-400">✦</span>
+          {/* Subtle Radial Cursor Spotlight Glow */}
+          <div
+            className="absolute pointer-events-none rounded-full blur-[80px] transition-opacity duration-500"
+            style={{
+              left: `${mousePos.x * 100}%`,
+              top: `${mousePos.y * 100}%`,
+              width: "380px",
+              height: "220px",
+              transform: "translate(-50%, -50%)",
+              background: "radial-gradient(circle, rgba(244,114,182,0.22) 0%, rgba(251,191,36,0.14) 45%, transparent 75%)",
+              opacity: isHovered ? 1 : 0.4,
+            }}
+          />
+
+          {/* Subtitle with Sparkles */}
+          <div className="flex items-center gap-3 font-mono text-[9px] sm:text-[11px] tracking-[0.3em] sm:tracking-[0.36em] text-rose-300/80 uppercase mb-4 sm:mb-6">
+            <span className="text-amber-300/80 text-xs">✦</span>
+            <span>A BOTANICAL LIVING STORYBOOK</span>
+            <span className="text-rose-300/80 text-xs">✦</span>
           </div>
 
-          {/* Huge Architectural Monograph Lettering with Living Liquid Shimmer & 3D Tilt */}
+          {/* Grand, Clean & Powerful Headline (Font-Sans Black, No Glitches) */}
           <h1
-            className="w-full font-display font-black tracking-tight sm:tracking-normal md:tracking-[-0.03em] leading-[0.85] uppercase select-none text-[clamp(2.4rem,11.5vw,16.5rem)] py-2 max-w-full text-center whitespace-nowrap will-change-transform transition-all duration-300 ease-out"
+            className="w-full font-sans font-black tracking-[-0.03em] sm:tracking-[-0.04em] leading-[0.85] text-center select-none text-[clamp(2.8rem,14vw,14.5rem)] py-2 uppercase transition-all duration-300 ease-out"
             style={{
               backgroundImage:
-                "linear-gradient(115deg, #ffffff 0%, #fed7aa 22%, #f472b6 42%, #e879f9 60%, #38bdf8 80%, #ffffff 100%)",
-              backgroundSize: "240% 100%",
+                "linear-gradient(135deg, #ffffff 0%, #fff1f2 22%, #fbcfe8 45%, #fde68a 70%, #ffffff 100%)",
+              backgroundSize: "200% 200%",
               backgroundPosition: `${mousePos.x * 100}% 50%`,
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
-              WebkitTextStroke: "1px rgba(255, 255, 255, 0.25)",
-              transform: isHovered
-                ? `perspective(1000px) rotateX(${(mousePos.y - 0.5) * -7}deg) rotateY(${(mousePos.x - 0.5) * 9}deg) scale(1.025)`
-                : "perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)",
-              filter:
-                "drop-shadow(0 10px 40px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 25px rgba(244, 114, 182, 0.25))",
+              filter: isHovered
+                ? "drop-shadow(0 15px 45px rgba(0,0,0,0.9)) drop-shadow(0 0 35px rgba(244, 114, 182, 0.35))"
+                : "drop-shadow(0 10px 30px rgba(0,0,0,0.8)) drop-shadow(0 0 20px rgba(251, 191, 36, 0.15))",
+              transform: isHovered ? "scale(1.015)" : "scale(1)",
             }}
           >
             FLORIA
           </h1>
 
-          {/* Micro Corner Crosshairs */}
-          <span className="absolute top-4 left-4 sm:left-12 font-mono text-xs text-pink-500/40 select-none">┌</span>
-          <span className="absolute top-4 right-4 sm:right-12 font-mono text-xs text-pink-500/40 select-none">┐</span>
-          <span className="absolute bottom-4 left-4 sm:left-12 font-mono text-xs text-pink-500/40 select-none">└</span>
-          <span className="absolute bottom-4 right-4 sm:right-12 font-mono text-xs text-pink-500/40 select-none">┘</span>
-
-          {/* Editorial Subtitle Strip Centered under FLORIA */}
-          <div className="mt-4 sm:mt-6 flex flex-wrap items-center justify-center gap-2 sm:gap-4 md:gap-6 font-mono text-[8.5px] sm:text-[10px] md:text-[11px] tracking-[0.2em] sm:tracking-[0.28em] text-zinc-400 uppercase">
-            <span>[ AN IMMERSIVE WORLD OF CURIOUS CREATURES ]</span>
-            <span className="text-zinc-600 hidden xs:inline">•</span>
-            <a
-              href="https://www.linkedin.com/in/harsh-patel-mca"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-zinc-300 hover:text-white font-medium transition-colors"
-            >
-              [ CREATED & DESIGNED BY HARSH PATEL ↗ ]
-            </a>
-          </div>
+          {/* Subtitle Motto */}
+          <p className="mt-4 sm:mt-6 font-mono text-[9px] sm:text-xs tracking-[0.24em] text-zinc-400 uppercase text-center max-w-lg">
+            An immersive realm crafted with tactile wool & quiet wonder
+          </p>
         </div>
 
         {/* ============================================================ */}
-        {/* 3. FINAL STORYBOOK COLOPHON & COPYRIGHT                      */}
+        {/* 3. CLEAN & SOPHISTICATED BOTTOM BAR                           */}
         {/* ============================================================ */}
-        <div className="pt-8 sm:pt-10 flex flex-col sm:flex-row items-center justify-between gap-6 font-mono text-[9px] sm:text-[10px] tracking-[0.16em] sm:tracking-[0.2em] text-zinc-500 uppercase">
-          {/* Copyright & Archival Credit */}
+        <div className="pt-8 sm:pt-10 flex flex-col sm:flex-row items-center justify-between gap-6 font-mono text-[10px] tracking-[0.18em] text-zinc-500 uppercase">
+          {/* Copyright & Harsh Patel Credit */}
           <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-3 text-center sm:text-left">
-            <span>© 2026 FLORIA</span>
-            <span>•</span>
+            <span>© 2026 FLORIA SANCTUARY</span>
+            <span className="text-zinc-600">•</span>
             <span>
-              CREATED BY{" "}
+              DESIGNED BY{" "}
               <a
                 href="https://www.linkedin.com/in/harsh-patel-mca"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-white hover:text-pink-300 transition-colors font-bold tracking-wider underline underline-offset-4 decoration-zinc-600 hover:decoration-pink-400"
+                className="text-zinc-300 hover:text-rose-300 transition-colors font-semibold"
               >
                 HARSH PATEL ↗
               </a>
             </span>
-            <span className="hidden md:inline">•</span>
-            <span className="hidden md:inline text-zinc-400">
-              IMMERSIVE LIVING SANCTUARY
-            </span>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
-            </span>
-            <span className="text-zinc-400 font-medium">STATUS: ACTIVE EXPEDITION</span>
+          {/* Status & Back to Top */}
+          <div className="flex items-center gap-5 sm:gap-6">
+            <div className="flex items-center gap-2">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-400" />
+              </span>
+              <span className="text-zinc-400">SANCTUARY BLOOMING</span>
+            </div>
+
+            <button
+              onClick={scrollToTop}
+              className="flex items-center gap-1.5 text-zinc-400 hover:text-white transition-colors cursor-pointer group"
+              title="Return to top"
+            >
+              <span>TOP</span>
+              <span className="group-hover:-translate-y-0.5 transition-transform">↑</span>
+            </button>
           </div>
         </div>
       </div>
     </footer>
   );
 }
-
