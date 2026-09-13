@@ -344,17 +344,25 @@ export default function StorytellingSection({ onLoadProgress }: StorytellingSect
     let vh = window.innerHeight;
     let lastTimestamp = 0;
 
+    let cachedViewportHeight = typeof window !== "undefined" ? window.innerHeight : 800;
+
     const handleResize = () => {
-      vw = window.innerWidth;
-      vh = window.innerHeight;
+      const newVw = window.innerWidth;
+      // Prevent mobile address-bar collapse from resizing canvas on every scroll
+      if (Math.abs(newVw - vw) > 10 || Math.abs(window.innerHeight - cachedViewportHeight) > 150) {
+        cachedViewportHeight = window.innerHeight;
+      }
+      vw = newVw;
+      vh = cachedViewportHeight;
+
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       if (canvasRef.current) {
-        canvasRef.current.width = window.innerWidth * dpr;
-        canvasRef.current.height = window.innerHeight * dpr;
+        canvasRef.current.width = vw * dpr;
+        canvasRef.current.height = vh * dpr;
       }
       if (particlesCanvasRef.current) {
-        particlesCanvasRef.current.width = window.innerWidth * dpr;
-        particlesCanvasRef.current.height = window.innerHeight * dpr;
+        particlesCanvasRef.current.width = vw * dpr;
+        particlesCanvasRef.current.height = vh * dpr;
       }
     };
 
@@ -373,31 +381,31 @@ export default function StorytellingSection({ onLoadProgress }: StorytellingSect
     };
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
 
-    // Staggered exit trajectories and organic floating physics for all 17 Bloom photos
+    // Staggered exit trajectories and organic floating physics for all 35 Bloom photos
+    const isMobileDevice = vw < 640;
     const textConfigs = BLOOM_ITEMS.map((item, idx) => ({
       get ref() {
         return { current: photoRefs.current[idx] };
       },
       start: 0.01 + (idx % 4) * 0.01,
       end: 0.12 + (idx % 4) * 0.015,
-      dx: item.dx,
-      dy: item.dy,
+      dx: isMobileDevice ? item.dx * 0.45 : item.dx,
+      dy: isMobileDevice ? item.dy * 0.45 : item.dy,
       initRot: item.rot,
-      extraRot: item.rot * 2.5,
+      extraRot: item.rot * (isMobileDevice ? 1.4 : 2.5),
       speed: item.speed,
       phase: item.phase,
-      ampY: 6 + (idx % 3) * 2,
-      ampX: 2 + (idx % 2) * 2,
+      ampY: (6 + (idx % 3) * 2) * (isMobileDevice ? 0.4 : 1),
+      ampX: (2 + (idx % 2) * 2) * (isMobileDevice ? 0.4 : 1),
       ampRot: 1.0,
-      parallaxX: item.dx > 0 ? 14 : -14,
-      parallaxY: item.dy * 0.08,
+      parallaxX: (item.dx > 0 ? 14 : -14) * (isMobileDevice ? 0.25 : 1),
+      parallaxY: item.dy * (isMobileDevice ? 0.03 : 0.08),
     }));
-
 
     const handleScroll = () => {
       if (!containerRef.current) return;
       const rect = containerRef.current.getBoundingClientRect();
-      const scrollTrackLength = rect.height - window.innerHeight;
+      const scrollTrackLength = rect.height - cachedViewportHeight;
       if (scrollTrackLength <= 0) return;
 
       const currentScroll = -rect.top;
@@ -420,6 +428,33 @@ export default function StorytellingSection({ onLoadProgress }: StorytellingSect
       return img && img.complete && img.naturalWidth > 0 ? img : null;
     };
 
+    // Responsive image scale and positioning calculator
+    const getDrawMetrics = (cw: number, ch: number, imgW: number, imgH: number, dollyMultiplier = 1.0) => {
+      const isPortrait = cw < ch;
+      let scale: number;
+      let dx: number;
+      let dy: number;
+
+      if (isPortrait) {
+        // Mobile portrait: fit to screen width with gentle 1.15x cinematic bleed
+        // This PREVENTS the massive 350% zoom crop where 75% of the video is lost!
+        scale = (cw / imgW) * 1.15 * dollyMultiplier;
+        const dw = imgW * scale;
+        const dh = imgH * scale;
+        dx = (cw - dw) / 2;
+        dy = (ch - dh) * 0.5; // Centered vertically
+        return { dw, dh, dx, dy, isPortrait };
+      } else {
+        // Desktop landscape: standard full cover
+        scale = Math.max(cw / imgW, ch / imgH) * dollyMultiplier;
+        const dw = imgW * scale;
+        const dh = imgH * scale;
+        dx = (cw - dw) / 2;
+        dy = (ch - dh) * 0.56;
+        return { dw, dh, dx, dy, isPortrait };
+      }
+    };
+
     // Ultra-smooth, seamless cinematic bridging renderer
     const renderFrame = (vFrame: number) => {
       const canvas = canvasRef.current;
@@ -440,13 +475,14 @@ export default function StorytellingSection({ onLoadProgress }: StorytellingSect
         const img1 = getCachedImg(part1Ref.current, Math.round(vFrame), TOTAL_PART1);
         if (!img1) return;
 
-        const imgW = img1.naturalWidth || 1920;
-        const imgH = img1.naturalHeight || 1080;
-        const scale = Math.max(cw / imgW, ch / imgH);
-        const dw = imgW * scale;
-        const dh = imgH * scale;
-        const dx = (cw - dw) / 2;
-        const dy = (ch - dh) * 0.56;
+        const imgW = img1.naturalWidth || 1280;
+        const imgH = img1.naturalHeight || 720;
+        const { dw, dh, dx, dy, isPortrait } = getDrawMetrics(cw, ch, imgW, imgH);
+
+        if (isPortrait) {
+          ctx.fillStyle = "#070709";
+          ctx.fillRect(0, 0, cw, ch);
+        }
 
         ctx.globalAlpha = 1.0;
         ctx.drawImage(img1, dx, dy, dw, dh);
@@ -459,13 +495,14 @@ export default function StorytellingSection({ onLoadProgress }: StorytellingSect
         const img2 = getCachedImg(part2Ref.current, p2Idx, TOTAL_PART2);
         if (!img2) return;
 
-        const imgW = img2.naturalWidth || 1920;
-        const imgH = img2.naturalHeight || 1080;
-        const scale = Math.max(cw / imgW, ch / imgH);
-        const dw = imgW * scale;
-        const dh = imgH * scale;
-        const dx = (cw - dw) / 2;
-        const dy = (ch - dh) * 0.56;
+        const imgW = img2.naturalWidth || 1280;
+        const imgH = img2.naturalHeight || 720;
+        const { dw, dh, dx, dy, isPortrait } = getDrawMetrics(cw, ch, imgW, imgH);
+
+        if (isPortrait) {
+          ctx.fillStyle = "#070709";
+          ctx.fillRect(0, 0, cw, ch);
+        }
 
         ctx.globalAlpha = 1.0;
         ctx.drawImage(img2, dx, dy, dw, dh);
@@ -473,15 +510,10 @@ export default function StorytellingSection({ onLoadProgress }: StorytellingSect
       } else {
         // =========================================================
         // PHASE 2: HARMONIC SYSTEMATIC BRIDGE (Seamless Transition)
-        // Both videos advance synchronously with S-curve cosine dissolve,
-        // camera dolly forward push, and subtle blossom light bloom!
         // =========================================================
         const localT = Math.min(1, Math.max(0, (vFrame - TRANSITION_START) / BLEND_SPAN));
-
-        // Cosine S-curve: zero derivative at start & arrival (buttery seamless)
         const blendWeight = 0.5 - 0.5 * Math.cos(Math.PI * localT);
 
-        // Synchronous frame indices
         const idx1 = Math.min(TOTAL_PART1 - 1, Math.round(vFrame));
         const idx2 = Math.min(TOTAL_PART2 - 1, Math.round(localT * (BLEND_SPAN - 1)));
 
@@ -490,37 +522,36 @@ export default function StorytellingSection({ onLoadProgress }: StorytellingSect
 
         if (!img1 && !img2) return;
 
-        // Cinematic Forward Dolly Motion (peaks at +3.6% zoom at midpoint)
         const dollyScale = 1.0 + Math.sin(localT * Math.PI) * 0.036;
-
         const refImg = img1 || img2!;
-        const imgW = refImg.naturalWidth || 1920;
-        const imgH = refImg.naturalHeight || 1080;
-        const baseScale = Math.max(cw / imgW, ch / imgH) * dollyScale;
-        const dw = imgW * baseScale;
-        const dh = imgH * baseScale;
-        const dx = (cw - dw) / 2;
-        const dy = (ch - dh) * 0.56;
+        const imgW = refImg.naturalWidth || 1280;
+        const imgH = refImg.naturalHeight || 720;
+        const { dw, dh, dx, dy, isPortrait } = getDrawMetrics(cw, ch, imgW, imgH, dollyScale);
 
-        // 1. Draw base video layer (Video 1 naturally completing its flight)
+        if (isPortrait) {
+          ctx.fillStyle = "#070709";
+          ctx.fillRect(0, 0, cw, ch);
+        }
+
+        // 1. Draw base video layer
         if (img1) {
           ctx.globalAlpha = 1.0;
           ctx.drawImage(img1, dx, dy, dw, dh);
         }
 
-        // 2. Dissolve in new video layer (Video 2 launching into view)
+        // 2. Dissolve in new video layer
         if (img2) {
           ctx.globalAlpha = blendWeight;
           ctx.drawImage(img2, dx, dy, dw, dh);
           ctx.globalAlpha = 1.0;
         }
 
-        // 3. Dreamy cherry-blossom sunbeam light bloom at the apex of the transition
+        // 3. Dreamy light bloom at apex of transition
         const bloomIntensity = Math.sin(localT * Math.PI) * 0.22;
         if (bloomIntensity > 0.005) {
           const grad = ctx.createRadialGradient(
-            cw * 0.5, ch * 0.44, cw * 0.06,
-            cw * 0.5, ch * 0.44, Math.max(cw, ch) * 0.7
+            cw * 0.5, ch * 0.5, cw * 0.06,
+            cw * 0.5, ch * 0.5, Math.max(cw, ch) * 0.7
           );
           grad.addColorStop(0, `rgba(255, 253, 247, ${bloomIntensity * 0.95})`);
           grad.addColorStop(0.35, `rgba(254, 215, 226, ${bloomIntensity * 0.65})`);
@@ -534,26 +565,26 @@ export default function StorytellingSection({ onLoadProgress }: StorytellingSect
 
     // 120fps buttery-smooth momentum physics render loop
     const renderLoop = () => {
-      // Damped Lerp factor for silky responsiveness without jitter
       const diff = targetProgressRef.current - currentProgressRef.current;
-      currentProgressRef.current += diff * 0.12;
+      currentProgressRef.current += diff * 0.14;
 
       const p = currentProgressRef.current;
 
       // -------------------------------------------------------------
       // STAGE 1: CARD EXPANSION (Progress 0.0 -> 0.16)
+      // Proportional matching border.png (375x666 ~ 1.776 ratio)
       // -------------------------------------------------------------
       let initW: number;
       let initH: number;
       if (vw < 640) {
-        initW = Math.min(185, vw * 0.46);
-        initH = Math.min(vh * 0.56, initW * (16 / 9));
+        initW = Math.min(265, Math.max(220, vw * 0.72));
+        initH = initW * (666 / 375); // Exact matching border frame ratio!
       } else if (vw < 1024) {
-        initW = Math.min(280, vw * 0.35);
-        initH = Math.min(vh * 0.65, initW * (16 / 9));
+        initW = Math.min(300, vw * 0.35);
+        initH = initW * (666 / 375);
       } else {
         initW = Math.min(340, Math.max(280, vw * 0.22));
-        initH = Math.min(vh * 0.68, initW * (16 / 9));
+        initH = initW * (666 / 375);
       }
 
       const expandProgress = Math.min(Math.max((p - 0.01) / (0.16 - 0.01), 0), 1);
@@ -718,7 +749,7 @@ export default function StorytellingSection({ onLoadProgress }: StorytellingSect
     <section
       ref={containerRef}
       suppressHydrationWarning
-      className="relative w-full h-[750vh] bg-black text-white select-none overflow-visible"
+      className="relative w-full h-[540vh] sm:h-[750vh] bg-black text-white select-none overflow-visible"
     >
       {/* Pinned 100vh viewport container */}
       <div className="sticky top-0 w-full h-screen overflow-hidden flex items-center justify-center bg-black">
@@ -748,13 +779,13 @@ export default function StorytellingSection({ onLoadProgress }: StorytellingSect
               photoRefs.current[idx] = el;
             }}
             style={{ transform: `rotate(${item.rot}deg)` }}
-            className={`${item.className} z-20 pointer-events-auto will-change-transform`}
-            onClick={() => openLightbox(idx)}
-            onMouseEnter={() => setHoveredIdx(idx)}
-            onMouseLeave={() => setHoveredIdx(null)}
+            className={`${item.className} z-20 pointer-events-none will-change-transform`}
           >
             <div
-              className={`bg-white/95 p-0.5 pb-1 sm:p-1.5 sm:pb-3 rounded-[3px] shadow-[0_8px_25px_rgba(0,0,0,0.7)] sm:shadow-[0_12px_35px_rgba(0,0,0,0.75)] transition-all duration-300 cursor-pointer group ${
+              onClick={() => openLightbox(idx)}
+              onMouseEnter={() => setHoveredIdx(idx)}
+              onMouseLeave={() => setHoveredIdx(null)}
+              className={`pointer-events-auto bg-white/95 p-0.5 pb-1 sm:p-1.5 sm:pb-3 rounded-[3px] shadow-[0_8px_25px_rgba(0,0,0,0.7)] sm:shadow-[0_12px_35px_rgba(0,0,0,0.75)] transition-all duration-300 cursor-pointer group ${
                 hoveredIdx !== null && hoveredIdx !== idx
                   ? "opacity-35 scale-[0.94] blur-[0.6px]"
                   : "opacity-100 hover:scale-125 hover:rotate-0 hover:z-40 hover:shadow-[0_20px_60px_rgba(244,114,182,0.9)] hover:ring-2 hover:ring-pink-300/80"
